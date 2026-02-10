@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+   
+  <link rel="icon" type="image/png" sizes="32x32" href="i9.png"> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RCNP-MAKER</title>
+
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #000;
+    }
+
+    .page {
+      min-height: 100vh;
+      background: url("F03.png") no-repeat center center;
+      background-size: cover;
+      position: relative;
+    }
+
+    .content {
+      position: absolute;
+      bottom: 185px;       /* Diminui a altura dos botões na página mobile */ 
+      left: 0;
+      right: 0;
+      padding: 0 24px;
+      text-align: center;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 14px;
+      padding: 05px 10px;     /* Diminui a altura e a largura dos botões */ 
+      margin: 12px auto;
+      max-width: 300px;
+      background: rgba(239, 204, 32, 0.75);
+      border-radius: 12px;
+      color: #000;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: scale(1.03);
+    }
+
+    .btn .icon {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+    }
+
+    .btn .icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .btn .label {
+      flex: 1;
+      text-align: left;
+    }
+
+    /* ===== MODAL QR CODE ===== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 999;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal img {
+      max-width: 80%;
+      max-height: 80%;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal span {
+      color: #fff;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    /* Desktop */
+    @media (min-width: 768px) {
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .page {
+        width: 360px;
+        height: 640px;
+        border-radius: 22px;
+        box-shadow: 0 0 40px rgba(0,0,0,0.6);
+      }
+       /* Diminui a altura dos botões na página do Desktop*/ 
+      .content {
+        bottom: 60px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Áudios -->
+  <audio id="bg-music" loop>
+    <source src="T1.mp3" type="audio/mp3">
+  </audio>
+
+  <audio id="click-sound">
+    <source src="M1.mp3" type="audio/mp3">
+  </audio>
+
+  <audio id="hover-sound">
+    <source src="H1.mp3" type="audio/mp3">
+  </audio>
+
+  <div class="page">
+    <div class="content">
+
+      <a class="btn" href="portfolio.html" target="_blank">
+        <span class="icon"><img src="i9.png"></span>
+        <span class="label">Portfólio - RCNP-MAKER</span>
+      </a> 
+
+      <a class="btn" href="https://wa.me/5562983134756" target="_blank">
+        <span class="icon"><img src="i1.png" alt=""></span>
+        <span class="label">WhatsApp</span>
+      </a>
+
+      <a class="btn" href="https://www.instagram.com/rcnpaz" target="_blank">
+        <span class="icon"><img src="i4.png" alt=""></span>
+        <span class="label">Instagram</span>
+      </a>
+
+      <a class="btn" href="https://www.tiktok.com/@legendcutss" target="_blank">
+        <span class="icon"><img src="i2.png" alt=""></span>
+        <span class="label">TikTok</span>
+      </a>
+
+      <a class="btn" href="https://www.linkedin.com/in/rafael-cinalli-n-paz" target="_blank">
+        <span class="icon"><img src="i3.png" alt=""></span>
+        <span class="label">LinkedIn</span>
+      </a>
+
+      <!-- BOTÃO QR CODE -->
+      <div class="btn" onclick="abrirQR()">
+        <span class="icon"><img src="i6.png" alt=""></span>
+        <span class="label">Abrir QR Code_Teste_01</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL DO QR CODE -->
+  <div class="modal" id="modalQR" onclick="fecharQR()">
+    <img src="Q01.png" alt="QR Code">
+    <span>Toque ou clique para fechar</span>
+  </div>
+
+  <script>
+    const bgMusic = document.getElementById("bg-music");
+    const clickSound = document.getElementById("click-sound");
+    const hoverSound = document.getElementById("hover-sound");
+    const buttons = document.querySelectorAll(".btn");
+
+    let musicStarted = false;
+
+    function startBackgroundMusic() {
+      if (!musicStarted) {
+        bgMusic.volume = 0.35;
+        bgMusic.play().catch(() => {});
+        musicStarted = true;
+      }
+    }
+
+    document.addEventListener("click", startBackgroundMusic, { once: true });
+    document.addEventListener("touchstart", startBackgroundMusic, { once: true });
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(() => {});
+      });
+
+      btn.addEventListener("mouseenter", () => {
+        hoverSound.currentTime = 0;
+        hoverSound.play().catch(() => {});
+      });
+    });
+
+    function abrirQR() {
+      document.getElementById("modalQR").classList.add("active");
+    }
+
+    function fecharQR() {
+      document.getElementById("modalQR").classList.remove("active");
+    }
+  </script>
+
+</body>
+</html>
